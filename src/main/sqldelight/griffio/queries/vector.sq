@@ -10,3 +10,6 @@ SELECT * FROM items ORDER BY embedding <-> '[3,1,2]' LIMIT 5;
 
 selectWithVector:
 SELECT * FROM items ORDER BY embedding <-> ?::VECTOR LIMIT 5;
+
+selectSubVector:
+SELECT subvector(?::VECTOR, 1, 3);
