@@ -20,4 +20,6 @@ fun main() {
     sample.vectorQueries.select().executeAsList().forEach(::println)
     println("embeddings")
     sample.vectorQueries.selectEmbeddings().executeAsList().forEach(::println)
+    println("embeddings")
+    sample.vectorQueries.selectWithVector("[3,1,2]").executeAsList().forEach(::println)
 }
