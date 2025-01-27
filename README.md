@@ -25,6 +25,8 @@ sqldelight {
 
 **TODO**
 
+Query Operators https://github.com/pgvector/pgvector/tree/master?tab=readme-ov-file#querying
+
 There are problems extending an existing grammar through more than one level of inheritance. This would require fixes to
 https://github.com/sqldelight/Grammar-Kit-Composer
 
