@@ -15,7 +15,7 @@ rootProject.name = "sqldelight-pgvector-module-app"
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            val vSqlDelight = "24.01.2025.02-SNAPSHOT"
+            val vSqlDelight = "FIXME-SNAPSHOT"
             val vIntellij = "231.9392.1"
             version("intellij", vIntellij)
             plugin("kotlin", "org.jetbrains.kotlin.jvm").version("2.1.0")
