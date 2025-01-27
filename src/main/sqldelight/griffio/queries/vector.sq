@@ -13,3 +13,7 @@ SELECT * FROM items ORDER BY embedding <-> ?::VECTOR LIMIT 5;
 
 selectSubVector:
 SELECT subvector(?::VECTOR, 1, 3);
+
+selectCosineDistance:
+SELECT cosine_distance('[1,1]'::VECTOR, '[-1,-1]');
+

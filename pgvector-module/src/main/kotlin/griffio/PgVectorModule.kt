@@ -2,12 +2,16 @@ package griffio
 
 import app.cash.sqldelight.dialect.api.DialectType
 import app.cash.sqldelight.dialect.api.IntermediateType
+import app.cash.sqldelight.dialect.api.PrimitiveType
 import app.cash.sqldelight.dialect.api.SqlDelightModule
 import app.cash.sqldelight.dialect.api.TypeResolver
+import app.cash.sqldelight.dialect.api.PrimitiveType.BOOLEAN
 import app.cash.sqldelight.dialects.postgresql.PostgreSqlTypeResolver
+import app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlTypes
 import com.alecstrong.sql.psi.core.psi.SqlFunctionExpr
 import com.alecstrong.sql.psi.core.psi.SqlTypeName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FLOAT
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeName
 import griffio.grammar.PgvectorParserUtil
@@ -56,6 +60,7 @@ private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : P
     override fun functionType(functionExpr: SqlFunctionExpr): IntermediateType? =
         when (functionExpr.functionName.text.lowercase()) {
             "subvector" -> IntermediateType(PgVectorSqlType.VECTOR)
+            "cosine_distance" -> IntermediateType(PrimitiveType.REAL)
             else -> parentResolver.functionType(functionExpr)
         }
 }

@@ -22,6 +22,8 @@ fun main() {
     sample.vectorQueries.selectEmbeddings().executeAsList().forEach(::println)
     println("embeddings")
     sample.vectorQueries.selectWithVector("[3,1,2]").executeAsList().forEach(::println)
-    println("embeddings")
+    println("subVector")
     sample.vectorQueries.selectSubVector("[1,2,3,4,5]").executeAsList().forEach(::println)
+    println("cosineDistance")
+    sample.vectorQueries.selectCosineDistance().executeAsList().forEach(::println)
 }
