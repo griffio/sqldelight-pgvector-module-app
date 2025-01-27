@@ -24,8 +24,6 @@
   ]
 }
 
-overrides ::= type_name
-
 // PostgreSql type_name will be replaced - need to inline inherited types plus new vector data types
 type_name ::= (
   vector_data_type |
@@ -51,7 +49,7 @@ type_name ::= (
   override = true
 }
 
-vector_data_type ::= 'VECTOR' LP sql_signed_number RP
+vector_data_type ::= 'VECTOR' [ LP sql_signed_number RP ]
 
 private sql_signed_number ::= <<signedNumberExt <<signed_number_real>>>>
 
@@ -63,7 +61,7 @@ distance_operator_expression ::= sql_column_expr distance_operator <<expr '-1'>>
   pin = 2
 }
 
-extension_expr ::= distance_operator_expression {
+extension_expr ::= distance_operator_expression | {double_colon_cast_operator_expression} {
   extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlExtensionExprImpl"
   implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlExtensionExpr"
   override = true
