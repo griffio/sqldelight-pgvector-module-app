@@ -1,0 +1,51 @@
+{
+  // Specify the parent parser.
+  // Use meta rules "<< >>" to reference core SqlParse rules statically, as currently only immediate parent class inheritance "{}" is supported
+
+  overrides="app.cash.sqldelight.dialects.postgresql.grammar.PostgreSqlParser"
+  elementTypeClass = "com.alecstrong.sql.psi.core.SqlElementType"
+
+  implements="com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
+  extends="com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl"
+  psiClassPrefix = "PgVector"
+
+  parserImports=[
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.COMMA"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.LP"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.RP"
+
+    "static com.alecstrong.sql.psi.core.SqlParserUtil.signedNumberExt"
+    "static com.alecstrong.sql.psi.core.SqlParser.signed_number_real"
+  ]
+}
+
+overrides ::= type_name
+
+// PostgreSql type_name will be replaced - need to inline inherited types plus new vector data types
+type_name ::= (
+  vector_data_type |
+  {small_int_data_type} |
+  {int_data_type} |
+  {big_int_data_type} |
+  {numeric_data_type} |
+  {approximate_numeric_data_type} |
+  {small_serial_data_type} |
+  {serial_data_type} |
+  {big_serial_data_type} |
+  {string_data_type} |
+  {uuid_data_type} |
+  {date_data_type} |
+  {boolean_data_type} |
+  {json_data_type} |
+  {blob_data_type} |
+  {tsvector_data_type} |
+  {xml_data_type}
+) [ '[]' ] {
+  extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlTypeNameImpl"
+  implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlTypeName"
+  override = true
+}
+
+vector_data_type ::= 'VECTOR' LP sql_signed_number RP
+
+private sql_signed_number ::= <<signedNumberExt <<signed_number_real>>>>
