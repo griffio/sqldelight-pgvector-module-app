@@ -55,6 +55,7 @@ private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : P
 
     override fun functionType(functionExpr: SqlFunctionExpr): IntermediateType? =
         when (functionExpr.functionName.text.lowercase()) {
+            "subvector" -> IntermediateType(PgVectorSqlType.VECTOR)
             else -> parentResolver.functionType(functionExpr)
         }
 }
