@@ -24,7 +24,24 @@ sqldelight {
 ```
 
 ```sql
+insert:
+INSERT INTO items (embedding) VALUES ('[1,2,3]'), ('[4,5,6]');
+
+select:
+SELECT *
+FROM items;
+
+selectEmbeddings:
 SELECT * FROM items ORDER BY embedding <-> '[3,1,2]' LIMIT 5;
+
+selectWithVector:
+SELECT * FROM items ORDER BY embedding <-> ?::VECTOR LIMIT 5;
+
+selectSubVector:
+SELECT subvector(?::VECTOR, 1, 3);
+
+selectCosineDistance:
+SELECT cosine_distance('[1,1]'::VECTOR, '[-1,-1]');
 ```
 
 **TODO**
