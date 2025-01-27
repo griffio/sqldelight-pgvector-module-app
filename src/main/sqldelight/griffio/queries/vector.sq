@@ -4,3 +4,6 @@ INSERT INTO items (embedding) VALUES ('[1,2,3]'), ('[4,5,6]');
 select:
 SELECT *
 FROM items;
+
+selectEmbeddings:
+SELECT * FROM items ORDER BY embedding <-> '[3,1,2]' LIMIT 5;

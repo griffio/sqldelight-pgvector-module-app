@@ -18,4 +18,6 @@ fun main() {
     val sample = Sample(driver)
     sample.vectorQueries.insert()
     sample.vectorQueries.select().executeAsList().forEach(::println)
+    println("embeddings")
+    sample.vectorQueries.selectEmbeddings().executeAsList().forEach(::println)
 }
