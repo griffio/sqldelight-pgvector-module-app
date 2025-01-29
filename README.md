@@ -73,3 +73,8 @@ SqlDelight needs this fix https://github.com/sqldelight/sqldelight/pull/5625 for
 PostgreSqlTypeResolver needs to be inherited rather than use delegation as needs polymorphic calls
 
 
+```shell
+createdb vector && 
+./gradlew build &&
+./gradlew flywayMigrate
+```
