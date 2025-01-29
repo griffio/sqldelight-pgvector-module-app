@@ -27,6 +27,7 @@
 // PostgreSql type_name will be replaced - need to inline inherited types plus new vector data types
 type_name ::= (
   vector_data_type |
+  {bit_data_type}
   {small_int_data_type} |
   {int_data_type} |
   {big_int_data_type} |

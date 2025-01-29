@@ -6,6 +6,7 @@ import app.cash.sqldelight.dialect.api.PrimitiveType
 import app.cash.sqldelight.dialect.api.SqlDelightModule
 import app.cash.sqldelight.dialect.api.TypeResolver
 import app.cash.sqldelight.dialect.api.PrimitiveType.BOOLEAN
+import app.cash.sqldelight.dialects.postgresql.PostgreSqlType
 import app.cash.sqldelight.dialects.postgresql.PostgreSqlTypeResolver
 import app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlTypes
 import com.alecstrong.sql.psi.core.psi.SqlFunctionExpr
@@ -59,8 +60,9 @@ private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : P
 
     override fun functionType(functionExpr: SqlFunctionExpr): IntermediateType? =
         when (functionExpr.functionName.text.lowercase()) {
-            "subvector" -> IntermediateType(PgVectorSqlType.VECTOR)
+            "binary_quantize" -> IntermediateType(PostgreSqlType.BIT)
             "cosine_distance" -> IntermediateType(PrimitiveType.REAL)
+            "subvector" -> IntermediateType(PgVectorSqlType.VECTOR)
             else -> parentResolver.functionType(functionExpr)
         }
 }
