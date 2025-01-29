@@ -5,17 +5,17 @@ import app.cash.sqldelight.dialect.api.IntermediateType
 import app.cash.sqldelight.dialect.api.PrimitiveType
 import app.cash.sqldelight.dialect.api.SqlDelightModule
 import app.cash.sqldelight.dialect.api.TypeResolver
+import app.cash.sqldelight.dialect.api.PrimitiveType.BOOLEAN
 import app.cash.sqldelight.dialects.postgresql.PostgreSqlTypeResolver
-import app.cash.sqldelight.dialects.postgresql.grammar.PostgreSqlParserUtil
+import app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlTypes
 import com.alecstrong.sql.psi.core.psi.SqlFunctionExpr
 import com.alecstrong.sql.psi.core.psi.SqlTypeName
-import com.intellij.lang.parser.GeneratedParserUtilBase
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FLOAT
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeName
 import griffio.grammar.PgvectorParserUtil
 import griffio.grammar.psi.PgVectorTypeName
-import griffio.grammar.rules.ParserOverrides
 
 class PgVectorModule : SqlDelightModule {
     override fun typeResolver(parentResolver: TypeResolver): TypeResolver = PgVectorTypeResolver(parentResolver)
@@ -23,12 +23,6 @@ class PgVectorModule : SqlDelightModule {
     override fun setup() {
         PgvectorParserUtil.reset()
         PgvectorParserUtil.overridePostgreSqlParser()
-        PostgreSqlParserUtil.type_name = GeneratedParserUtilBase.Parser { psiBuilder, i ->
-            PgvectorParserUtil.type_name?.parse(psiBuilder, i) ?: ParserOverrides.type_name_real(psiBuilder, i)
-        }
-        PostgreSqlParserUtil.extension_expr = GeneratedParserUtilBase.Parser { psiBuilder, i ->
-            PgvectorParserUtil.extension_expr?.parse(psiBuilder, i) ?: ParserOverrides.extension_expr_real(psiBuilder, i)
-        }
     }
 }
 
@@ -55,8 +49,12 @@ enum class PgVectorSqlType(override val javaType: TypeName) : DialectType {
 private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : PostgreSqlTypeResolver(parentResolver) {
 
     override fun definitionType(typeName: SqlTypeName): IntermediateType = with(typeName) {
-        check(this is PgVectorTypeName)
-        return IntermediateType(PgVectorSqlType.VECTOR)
+     check(this is PgVectorTypeName)
+        val type = (when {
+            vectorDataType != null -> IntermediateType(PgVectorSqlType.VECTOR)
+            else -> super.definitionType(typeName)
+        })
+        return type
     }
 
     override fun functionType(functionExpr: SqlFunctionExpr): IntermediateType? =

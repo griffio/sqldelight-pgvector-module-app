@@ -25,7 +25,25 @@
 }
 
 // PostgreSql type_name will be replaced - need to inline inherited types plus new vector data types
-type_name ::= vector_data_type {
+type_name ::= (
+  vector_data_type |
+  {small_int_data_type} |
+  {int_data_type} |
+  {big_int_data_type} |
+  {numeric_data_type} |
+  {approximate_numeric_data_type} |
+  {small_serial_data_type} |
+  {serial_data_type} |
+  {big_serial_data_type} |
+  {string_data_type} |
+  {uuid_data_type} |
+  {date_data_type} |
+  {boolean_data_type} |
+  {json_data_type} |
+  {blob_data_type} |
+  {tsvector_data_type} |
+  {xml_data_type}
+) [ '[]' ] {
   extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlTypeNameImpl"
   implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlTypeName"
   override = true
@@ -43,7 +61,7 @@ distance_operator_expression ::= sql_column_expr distance_operator <<expr '-1'>>
   pin = 2
 }
 
-extension_expr ::= distance_operator_expression {
+extension_expr ::= distance_operator_expression | {double_colon_cast_operator_expression} {
   extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlExtensionExprImpl"
   implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlExtensionExpr"
   override = true
