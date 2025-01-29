@@ -26,4 +26,12 @@ fun main() {
     sample.vectorQueries.selectCosineDistance().executeAsList().forEach(::println)
     println("binaryQuantize")
     sample.vectorQueries.selectBinaryQuantize().executeAsList().forEach(::println)
+    println("l2Distance")
+    sample.vectorQueries.selectL2Distance().executeAsList().forEach(::println)
+    println("innerProduct")
+    sample.vectorQueries.selectInnerProduct().executeAsList().forEach(::println)
+    println("euclideanDistance")
+    sample.vectorQueries.selectL1Distance().executeAsList().forEach(::println)
+    println("selectL2Normalize")
+    sample.vectorQueries.selectL2Normalize().executeAsList().forEach(::println)
 }

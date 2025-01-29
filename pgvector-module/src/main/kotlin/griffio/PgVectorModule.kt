@@ -62,7 +62,13 @@ private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : P
         when (functionExpr.functionName.text.lowercase()) {
             "binary_quantize" -> IntermediateType(PostgreSqlType.BIT)
             "cosine_distance" -> IntermediateType(PrimitiveType.REAL)
+            "inner_product" -> IntermediateType(PrimitiveType.REAL)
+            "l1_distance" -> IntermediateType(PrimitiveType.REAL)
+            "l2_distance" -> IntermediateType(PrimitiveType.REAL)
+            "l2_normalize" -> IntermediateType(PgVectorSqlType.VECTOR)
             "subvector" -> IntermediateType(PgVectorSqlType.VECTOR)
+            "vector_dims" -> IntermediateType(PostgreSqlType.INTEGER)
+            "vector_norm" -> IntermediateType(PrimitiveType.REAL)
             else -> parentResolver.functionType(functionExpr)
         }
 }

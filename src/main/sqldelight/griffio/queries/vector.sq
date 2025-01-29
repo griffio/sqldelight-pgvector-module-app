@@ -19,3 +19,21 @@ SELECT cosine_distance('[1,1]'::VECTOR, '[-1,-1]');
 
 selectBinaryQuantize:
 SELECT binary_quantize('[0,0.1,-0.2,-0.3,0.4,0.5,0.6,-0.7,0.8,-0.9,1]'::VECTOR);
+
+selectVectorNorm:
+SELECT round(vector_norm('[1,1]')::NUMERIC, 5);
+
+selectL2Distance:
+SELECT l2_distance('[0,0]'::VECTOR, '[3,4]');
+
+selectInnerProduct:
+SELECT inner_product('[1,2]'::VECTOR, '[3,4]');
+
+selectL1Distance:
+SELECT l1_distance('[1,2,3,4,5,6,7,8,9]'::VECTOR, '[0,3,2,5,4,7,6,9,8]');
+
+selectL2Normalize:
+SELECT l2_normalize('[3,4]'::VECTOR);
+
+
+
