@@ -24,4 +24,6 @@ fun main() {
     sample.vectorQueries.selectSubVector("[1,2,3,4,5]").executeAsList().forEach(::println)
     println("cosineDistance")
     sample.vectorQueries.selectCosineDistance().executeAsList().forEach(::println)
+    println("binaryQuantize")
+    sample.vectorQueries.selectBinaryQuantize().executeAsList().forEach(::println)
 }
