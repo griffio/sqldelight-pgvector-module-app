@@ -67,3 +67,16 @@ extension_expr ::= distance_operator_expression | {double_colon_cast_operator_ex
   implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlExtensionExpr"
   override = true
 }
+
+index_method ::= 'BRIN' | 'BTREE' | 'GIN' | 'GIST' | 'HASH' | 'HNSW' | 'IVFFLAT' {
+  extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlIndexMethodImpl"
+  implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlIndexMethod"
+  override = true
+}
+
+storage_parameters ::= 'autosummarize' | 'buffering' | 'deduplicate_items' | 'fastupdate' | 'fillfactor' | 'gin_pending_list_limit' | 'pages_per_range' | 'lists' {
+  extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlStorageParameterImpl"
+  implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlStorageParameter"
+  override = true
+}
+

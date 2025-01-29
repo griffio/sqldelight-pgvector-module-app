@@ -3,3 +3,6 @@ CREATE TABLE items (
     embedding VECTOR(3)
 );
 
+CREATE INDEX idx_embedding_hnsw ON items USING hnsw (embedding vector_l2_ops);
+
+CREATE INDEX idx_embedding_ivfflat ON items USING ivfflat (embedding vector_l2_ops) WITH (lists = 100);
