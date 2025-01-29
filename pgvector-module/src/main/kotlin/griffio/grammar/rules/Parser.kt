@@ -13,8 +13,8 @@ object ParserOverrides : GeneratedParserUtilBase() {
     fun typeNameDataTypeExt(
         builder: PsiBuilder,
         level: Int,
-        type_name_data_type: Parser,
-    ): Boolean = type_name_data_type.parse(builder, level)
+        geometry_data_type: Parser,
+    ): Boolean = geometry_data_type.parse(builder, level)
 
     @JvmStatic
     fun type_name_real(builder_: PsiBuilder, level_: Int): Boolean {
