@@ -70,8 +70,7 @@ https://github.com/sqldelight/Grammar-Kit-Composer - Such that, when adding to a
 
 SqlDelight needs this fix https://github.com/sqldelight/sqldelight/pull/5625 for the module resolver to be the first
 
-PostgreSqlTypeResolver needs to be inherited rather than use delegation as needs polymorphic calls
-
+PostgreSqlTypeResolver needs to be (open) inheritable rather than use delegation e.g. override `definitionType` expects to be called
 
 ```shell
 createdb vector && 
