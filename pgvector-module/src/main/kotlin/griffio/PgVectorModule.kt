@@ -51,10 +51,10 @@ private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : P
 
     override fun definitionType(typeName: SqlTypeName): IntermediateType = with(typeName) {
      check(this is PgVectorTypeName)
-        val type = (when {
+        val type = when {
             vectorDataType != null -> IntermediateType(PgVectorSqlType.VECTOR)
             else -> super.definitionType(typeName)
-        })
+        }
         return type
     }
 
