@@ -18,6 +18,8 @@ import com.squareup.kotlinpoet.TypeName
 import griffio.grammar.PgvectorParser
 import griffio.grammar.PgvectorParserUtil
 import griffio.grammar.PgvectorParserUtil.extension_expr
+import griffio.grammar.PgvectorParserUtil.index_method
+import griffio.grammar.PgvectorParserUtil.storage_parameters
 import griffio.grammar.PgvectorParserUtil.type_name
 import griffio.grammar.psi.PgVectorTypeName
 
@@ -36,6 +38,16 @@ class PgVectorModule : SqlDelightModule {
         PostgreSqlParserUtil.extension_expr = Parser { psiBuilder, i ->
             extension_expr?.parse(psiBuilder, i) ?: PgvectorParser.extension_expr_real(psiBuilder, i)
                     || PostgreSqlParser.extension_expr_real(psiBuilder, i)
+        }
+        // etc
+        PostgreSqlParserUtil.index_method = Parser { psiBuilder, i ->
+            index_method?.parse(psiBuilder, i) ?: PgvectorParser.index_method_real(psiBuilder, i)
+                    || PostgreSqlParser.index_method_real(psiBuilder, i)
+        }
+        // etc
+        PostgreSqlParserUtil.storage_parameters = Parser { psiBuilder, i ->
+            storage_parameters?.parse(psiBuilder, i) ?: PgvectorParser.storage_parameters_real(psiBuilder, i)
+                    || PostgreSqlParser.storage_parameters_real(psiBuilder, i)
         }
 
     }
