@@ -5,17 +5,20 @@ import app.cash.sqldelight.dialect.api.IntermediateType
 import app.cash.sqldelight.dialect.api.PrimitiveType
 import app.cash.sqldelight.dialect.api.SqlDelightModule
 import app.cash.sqldelight.dialect.api.TypeResolver
-import app.cash.sqldelight.dialect.api.PrimitiveType.BOOLEAN
 import app.cash.sqldelight.dialects.postgresql.PostgreSqlType
 import app.cash.sqldelight.dialects.postgresql.PostgreSqlTypeResolver
-import app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlTypes
+import app.cash.sqldelight.dialects.postgresql.grammar.PostgreSqlParser
+import app.cash.sqldelight.dialects.postgresql.grammar.PostgreSqlParserUtil
 import com.alecstrong.sql.psi.core.psi.SqlFunctionExpr
 import com.alecstrong.sql.psi.core.psi.SqlTypeName
+import com.intellij.lang.parser.GeneratedParserUtilBase.Parser
 import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FLOAT
 import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeName
+import griffio.grammar.PgvectorParser
 import griffio.grammar.PgvectorParserUtil
+import griffio.grammar.PgvectorParserUtil.extension_expr
+import griffio.grammar.PgvectorParserUtil.type_name
 import griffio.grammar.psi.PgVectorTypeName
 
 class PgVectorModule : SqlDelightModule {
@@ -24,6 +27,17 @@ class PgVectorModule : SqlDelightModule {
     override fun setup() {
         PgvectorParserUtil.reset()
         PgvectorParserUtil.overridePostgreSqlParser()
+        // As the grammar doesn't support inheritance - override type_name manually to try inherited type_name
+        PostgreSqlParserUtil.type_name = Parser { psiBuilder, i ->
+            type_name?.parse(psiBuilder, i) ?: PgvectorParser.type_name_real(psiBuilder, i)
+                    || PostgreSqlParser.type_name_real(psiBuilder, i)
+        }
+        // doesn't support inheritance - override extension_expr manually to try inherited extension_expr
+        PostgreSqlParserUtil.extension_expr = Parser { psiBuilder, i ->
+            extension_expr?.parse(psiBuilder, i) ?: PgvectorParser.extension_expr_real(psiBuilder, i)
+                    || PostgreSqlParser.extension_expr_real(psiBuilder, i)
+        }
+
     }
 }
 
@@ -49,13 +63,11 @@ enum class PgVectorSqlType(override val javaType: TypeName) : DialectType {
 // Change to inheritance so that definitionType can be called by polymorphism - not possible with delegation
 private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : PostgreSqlTypeResolver(parentResolver) {
 
-    override fun definitionType(typeName: SqlTypeName): IntermediateType = with(typeName) {
-     check(this is PgVectorTypeName)
-        val type = when {
-            vectorDataType != null -> IntermediateType(PgVectorSqlType.VECTOR)
+    override fun definitionType(typeName: SqlTypeName): IntermediateType {
+        return when (typeName) {
+            is PgVectorTypeName -> IntermediateType(PgVectorSqlType.VECTOR)
             else -> super.definitionType(typeName)
         }
-        return type
     }
 
     override fun functionType(functionExpr: SqlFunctionExpr): IntermediateType? =
