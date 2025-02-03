@@ -63,14 +63,26 @@ SELECT binary_quantize('[0,0.1,-0.2,-0.3,0.4,0.5,0.6,-0.7,0.8,-0.9,1]'::VECTOR);
 
 **TODO**
 
-Query Operators https://github.com/pgvector/pgvector/tree/master?tab=readme-ov-file#querying
+Add more types - halfvec, sparse vectors 
+Query Operators - add more
+https://github.com/pgvector/pgvector/tree/master?tab=readme-ov-file#querying
 
-There are problems extending an existing grammar through more than one level of inheritance. This would require fixes to
-https://github.com/sqldelight/Grammar-Kit-Composer - Such that, when adding to an existing type (e.g. data type) concatenation of PostgreSql types is required
+Extending an existing grammar through more than one level of inheritance isn't supported by grammar generator -  
+This would require fixes to https://github.com/sqldelight/Grammar-Kit-Composer - work around is to override manually e.g.
+
+```kotlin
+ PostgreSqlParserUtil.type_name = Parser { psiBuilder, i ->
+            type_name?.parse(psiBuilder, i) ?: PgvectorParser.type_name_real(psiBuilder, i)
+                    || PostgreSqlParser.type_name_real(psiBuilder, i)
+        }
+```
 
 SqlDelight needs this fix https://github.com/sqldelight/sqldelight/pull/5625 for the module resolver to be the first
 
-PostgreSqlTypeResolver needs to be (open) inheritable rather than use delegation e.g. override `definitionType` expects to be called
+PostgreSqlTypeResolver needs to be (open) inheritable rather than use delegation e.g.
+override `definitionType` method expects to be called via inheritance 
+
+Use Jdbc types https://github.com/pgvector/pgvector-java either directly in type resolver or using SqlDelight type adapters
 
 ```shell
 createdb vector && 
