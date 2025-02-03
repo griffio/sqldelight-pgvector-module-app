@@ -29,6 +29,7 @@ dependencyResolutionManagement {
             library("flyway-database-postgresql", "org.flywaydb:flyway-database-postgresql:10.1.0")
             library("google-truth", "com.google.truth:truth:1.4.2")
             library("intellij-ide", "com.jetbrains.intellij.platform:ide:$vIntellij")
+            library("pgvector", "com.pgvector:pgvector:0.1.6")
             plugin("intellij", "org.jetbrains.intellij.platform").version("2.1.0")
             plugin("grammarKitComposer", "com.alecstrong.grammar.kit.composer").version("0.1.12")
         }
