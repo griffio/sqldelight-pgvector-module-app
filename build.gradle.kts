@@ -18,6 +18,7 @@ repositories {
 dependencies {
     implementation(libs.sqldelight.jdbc.driver)
     implementation(libs.google.truth)
+    implementation(libs.pgvector)
     api(libs.sqldelight.postgresql.dialect)
     implementation(libs.postgresql.jdbc.driver)
     testImplementation(kotlin("test"))
@@ -27,7 +28,7 @@ sqldelight {
     databases {
         create("Sample") {
             deriveSchemaFromMigrations.set(true)
-            migrationOutputDirectory = file("$buildDir/generated/migrations")
+            migrationOutputDirectory = file("${layout.buildDirectory}/generated/migrations")
             migrationOutputFileFormat = ".sql"
             packageName.set("griffio.queries")
             dialect(libs.sqldelight.postgresql.dialect)
