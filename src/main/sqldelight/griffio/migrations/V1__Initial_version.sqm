@@ -1,8 +1,10 @@
+import com.pgvector.PGvector;
+
 CREATE EXTENSION IF NOT EXISTS vector;
 
 CREATE TABLE items (
     id BIGSERIAL PRIMARY KEY,
-    embedding VECTOR(3)
+    embedding VECTOR(3) AS PGvector
 );
 
 CREATE INDEX idx_embedding_hnsw ON items USING hnsw (embedding vector_l2_ops);

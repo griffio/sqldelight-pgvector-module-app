@@ -1,6 +1,9 @@
 package griffio
 
+import app.cash.sqldelight.ColumnAdapter
 import app.cash.sqldelight.driver.jdbc.asJdbcDriver
+import com.pgvector.PGvector
+import griffio.migrations.Items
 import griffio.queries.Sample
 import org.postgresql.ds.PGSimpleDataSource
 
@@ -11,9 +14,16 @@ private fun getSqlDriver() = PGSimpleDataSource().apply {
     password = ""
 }.asJdbcDriver()
 
+val vectorAdapter = object: ColumnAdapter<PGvector, String> {
+    override fun decode(databaseValue: String): PGvector = PGvector(databaseValue)
+    override fun encode(value: PGvector): String = value.toString()
+}
+
+val adapters = Items.Adapter(vectorAdapter)
+
 fun main() {
     val driver = getSqlDriver()
-    val sample = Sample(driver)
+    val sample = Sample(driver, adapters)
     sample.vectorQueries.insert()
     sample.vectorQueries.select().executeAsList().forEach(::println)
     println("embeddings")
