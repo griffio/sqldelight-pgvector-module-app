@@ -65,7 +65,7 @@ SELECT binary_quantize('[0,0.1,-0.2,-0.3,0.4,0.5,0.6,-0.7,0.8,-0.9,1]'::VECTOR);
 
 Add more types - halfvec, sparse vectors 
 Query Operators - add more for (+ - * = > < <= >= != ||)
-https://github.com/pgvector/pgvector/tree/master?tab=readme-ov-file#querying
+Add functions - e.g. sum(vector), avg(vector) https://github.com/pgvector/pgvector/blob/master/test/sql/vector_type.sql
 
 Extending an existing grammar through more than one level of inheritance isn't supported by grammar generator -  
 This would require fixes to https://github.com/sqldelight/Grammar-Kit-Composer - work around is to override manually e.g.
