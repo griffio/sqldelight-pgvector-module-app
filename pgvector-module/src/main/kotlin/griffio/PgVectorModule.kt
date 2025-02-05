@@ -84,6 +84,7 @@ private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : P
 
     override fun functionType(functionExpr: SqlFunctionExpr): IntermediateType? =
         when (functionExpr.functionName.text.lowercase()) {
+            "avg" -> IntermediateType(PgVectorSqlType.VECTOR)
             "binary_quantize" -> IntermediateType(PostgreSqlType.BIT)
             "cosine_distance" -> IntermediateType(PrimitiveType.REAL)
             "inner_product" -> IntermediateType(PrimitiveType.REAL)
@@ -91,6 +92,7 @@ private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : P
             "l2_distance" -> IntermediateType(PrimitiveType.REAL)
             "l2_normalize" -> IntermediateType(PgVectorSqlType.VECTOR)
             "subvector" -> IntermediateType(PgVectorSqlType.VECTOR)
+            "sum" -> IntermediateType(PgVectorSqlType.VECTOR)
             "vector_dims" -> IntermediateType(PostgreSqlType.INTEGER)
             "vector_norm" -> IntermediateType(PrimitiveType.REAL)
             else -> parentResolver.functionType(functionExpr)
