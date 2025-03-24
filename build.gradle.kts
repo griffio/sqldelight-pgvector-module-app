@@ -24,11 +24,13 @@ dependencies {
     testImplementation(kotlin("test"))
 }
 
+val migrationsDir = layout.buildDirectory.dir("generated/migrations")
+
 sqldelight {
     databases {
         create("Sample") {
             deriveSchemaFromMigrations.set(true)
-            migrationOutputDirectory = file("${layout.buildDirectory}/generated/migrations")
+            migrationOutputDirectory = migrationsDir
             migrationOutputFileFormat = ".sql"
             packageName.set("griffio.queries")
             dialect(libs.sqldelight.postgresql.dialect)
@@ -50,7 +52,7 @@ flyway {
     url = "jdbc:postgresql://localhost:5432/vector"
     user = "postgres"
     password = ""
-    locations = arrayOf("filesystem:$buildDir/generated/migrations")
+    locations = arrayOf("filesystem:${migrationsDir.get().asFile}")
     baselineOnMigrate = true
     baselineVersion = "0"
 }
