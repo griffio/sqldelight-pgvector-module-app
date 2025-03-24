@@ -9,6 +9,8 @@ import app.cash.sqldelight.dialects.postgresql.PostgreSqlType
 import app.cash.sqldelight.dialects.postgresql.PostgreSqlTypeResolver
 import app.cash.sqldelight.dialects.postgresql.grammar.PostgreSqlParser
 import app.cash.sqldelight.dialects.postgresql.grammar.PostgreSqlParserUtil
+import app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlExtensionExpr
+import com.alecstrong.sql.psi.core.psi.SqlExpr
 import com.alecstrong.sql.psi.core.psi.SqlFunctionExpr
 import com.alecstrong.sql.psi.core.psi.SqlTypeName
 import com.intellij.lang.parser.GeneratedParserUtilBase.Parser
@@ -22,6 +24,7 @@ import griffio.grammar.PgvectorParserUtil.index_method
 import griffio.grammar.PgvectorParserUtil.storage_parameters
 import griffio.grammar.PgvectorParserUtil.type_name
 import griffio.grammar.psi.PgVectorTypeName
+import griffio.grammar.psi.impl.PgVectorExtensionExprImpl
 
 class PgVectorModule : SqlDelightModule {
     override fun typeResolver(parentResolver: TypeResolver): TypeResolver = PgVectorTypeResolver(parentResolver)
@@ -75,11 +78,36 @@ enum class PgVectorSqlType(override val javaType: TypeName) : DialectType {
 // Change to inheritance so that definitionType can be called by polymorphism - not possible with delegation
 private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : PostgreSqlTypeResolver(parentResolver) {
 
+    override fun binaryExprTypes(): Array<DialectType> {
+        return arrayOf(PgVectorSqlType.VECTOR, *super.binaryExprTypes())
+    }
+
     override fun definitionType(typeName: SqlTypeName): IntermediateType {
         return when (typeName) {
             is PgVectorTypeName -> IntermediateType(PgVectorSqlType.VECTOR)
             else -> super.definitionType(typeName)
         }
+    }
+
+    override fun resolvedType(expr: SqlExpr): IntermediateType {
+        return when (expr) {
+            is PgVectorExtensionExprImpl -> expr.vectorExtension()
+            else -> super.resolvedType(expr)
+        }
+    }
+
+    /**
+     * Supported distance functions are:
+     * <-> - L2 distance
+     * <#> - (negative) inner product
+     * <=> - cosine distance
+     * <+> - L1 distance
+     * <~> - Hamming distance (binary vectors) // TODO
+     * <%> - Jaccard distance (binary vectors) // TODO
+     */
+    fun PgVectorExtensionExprImpl.vectorExtension(): IntermediateType {
+        // TODO need to check if all are real type
+        if (distanceOperatorExpression != null) return IntermediateType(PrimitiveType.REAL) else error("must be distanceOperatorExpression")
     }
 
     override fun functionType(functionExpr: SqlFunctionExpr): IntermediateType? =
@@ -95,6 +123,6 @@ private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : P
             "sum" -> IntermediateType(PgVectorSqlType.VECTOR)
             "vector_dims" -> IntermediateType(PostgreSqlType.INTEGER)
             "vector_norm" -> IntermediateType(PrimitiveType.REAL)
-            else -> parentResolver.functionType(functionExpr)
+            else -> super.functionType(functionExpr)
         }
 }
