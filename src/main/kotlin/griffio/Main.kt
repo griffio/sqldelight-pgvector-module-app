@@ -44,4 +44,12 @@ fun main() {
     sample.vectorQueries.selectL1Distance().executeAsList().forEach(::println)
     println("selectL2Normalize")
     sample.vectorQueries.selectL2Normalize().executeAsList().forEach(::println)
+    println("selectGT")
+    sample.vectorQueries.selectGT().executeAsList().forEach(::println)
+    println("selectAvg")
+    sample.vectorQueries.selectAvg().executeAsList().forEach(::println)
+    println("selectMultiply")
+    sample.vectorQueries.selectMultiply().executeAsList().forEach(::println)
+    println("selectNegativeDistanceOperator")
+    sample.vectorQueries.selectNegativeDistanceOperator().executeAsList().forEach(::println)
 }

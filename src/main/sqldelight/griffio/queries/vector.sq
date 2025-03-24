@@ -49,3 +49,6 @@ SELECT sum(embedding) FROM items;
 
 selectAvg:
 SELECT avg(embedding) FROM items;
+
+selectNegativeDistanceOperator:
+SELECT embedding <#> embedding FROM items;
