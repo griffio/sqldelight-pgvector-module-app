@@ -9,7 +9,6 @@ import app.cash.sqldelight.dialects.postgresql.PostgreSqlType
 import app.cash.sqldelight.dialects.postgresql.PostgreSqlTypeResolver
 import app.cash.sqldelight.dialects.postgresql.grammar.PostgreSqlParser
 import app.cash.sqldelight.dialects.postgresql.grammar.PostgreSqlParserUtil
-import app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlExtensionExpr
 import com.alecstrong.sql.psi.core.psi.SqlExpr
 import com.alecstrong.sql.psi.core.psi.SqlFunctionExpr
 import com.alecstrong.sql.psi.core.psi.SqlTypeName
@@ -57,10 +56,12 @@ class PgVectorModule : SqlDelightModule {
 }
 
 enum class PgVectorSqlType(override val javaType: TypeName) : DialectType {
+    BIT(STRING),
     VECTOR(STRING);
 
     override fun prepareStatementBinder(columnIndex: CodeBlock, value: CodeBlock): CodeBlock {
         return when (this) {
+            BIT -> CodeBlock.of("bindString(%L, %L)\n", columnIndex, value)
             VECTOR -> CodeBlock.of("bindString(%L, %L)\n", columnIndex, value)
         }
     }
@@ -68,7 +69,7 @@ enum class PgVectorSqlType(override val javaType: TypeName) : DialectType {
     override fun cursorGetter(columnIndex: Int, cursorName: String): CodeBlock {
         return CodeBlock.of(
             when (this) {
-                VECTOR -> "$cursorName.getString($columnIndex)"
+                BIT, VECTOR -> "$cursorName.getString($columnIndex)"
             },
             javaType,
         )
@@ -78,13 +79,13 @@ enum class PgVectorSqlType(override val javaType: TypeName) : DialectType {
 // Change to inheritance so that definitionType can be called by polymorphism - not possible with delegation
 private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : PostgreSqlTypeResolver(parentResolver) {
 
-    override fun binaryExprTypes(): Array<DialectType> {
-        return arrayOf(PgVectorSqlType.VECTOR, *super.binaryExprTypes())
+    override fun booleanBinaryExprTypes(): Array<DialectType> {
+        return arrayOf(PgVectorSqlType.VECTOR, PgVectorSqlType.BIT, *super.booleanBinaryExprTypes())
     }
 
     override fun definitionType(typeName: SqlTypeName): IntermediateType {
         return when (typeName) {
-            is PgVectorTypeName -> IntermediateType(PgVectorSqlType.VECTOR)
+            is PgVectorTypeName -> if (typeName.bitDataType != null) IntermediateType(PgVectorSqlType.BIT) else IntermediateType(PgVectorSqlType.VECTOR)
             else -> super.definitionType(typeName)
         }
     }
@@ -102,18 +103,17 @@ private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : P
      * <#> - (negative) inner product
      * <=> - cosine distance
      * <+> - L1 distance
-     * <~> - Hamming distance (binary vectors) // TODO
-     * <%> - Jaccard distance (binary vectors) // TODO
+     * <~> - Hamming distance (binary vectors) // BIT type
+     * <%> - Jaccard distance (binary vectors) // BIT type
      */
     fun PgVectorExtensionExprImpl.vectorExtension(): IntermediateType {
-        // TODO need to check if all are real type
         if (distanceOperatorExpression != null) return IntermediateType(PrimitiveType.REAL) else error("must be distanceOperatorExpression")
     }
 
     override fun functionType(functionExpr: SqlFunctionExpr): IntermediateType? =
         when (functionExpr.functionName.text.lowercase()) {
             "avg" -> IntermediateType(PgVectorSqlType.VECTOR)
-            "binary_quantize" -> IntermediateType(PostgreSqlType.BIT)
+            "binary_quantize" -> IntermediateType(PgVectorSqlType.BIT)
             "cosine_distance" -> IntermediateType(PrimitiveType.REAL)
             "inner_product" -> IntermediateType(PrimitiveType.REAL)
             "l1_distance" -> IntermediateType(PrimitiveType.REAL)

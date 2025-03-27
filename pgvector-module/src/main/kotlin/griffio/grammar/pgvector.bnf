@@ -22,10 +22,12 @@
   ]
 }
 
-type_name ::= vector_data_type {
+type_name ::= bit_data_type | vector_data_type {
   extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlTypeNameImpl"
   implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlTypeName"
 }
+
+bit_data_type ::= 'BIT' [ LP sql_signed_number RP ]
 
 vector_data_type ::= 'VECTOR' [ LP sql_signed_number RP ]
 
