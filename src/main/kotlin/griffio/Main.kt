@@ -2,6 +2,7 @@ package griffio
 
 import app.cash.sqldelight.ColumnAdapter
 import app.cash.sqldelight.driver.jdbc.asJdbcDriver
+import com.pgvector.PGbit
 import com.pgvector.PGvector
 import griffio.migrations.Items
 import griffio.queries.Sample
@@ -14,12 +15,16 @@ private fun getSqlDriver() = PGSimpleDataSource().apply {
     password = ""
 }.asJdbcDriver()
 
+val bitVectorAdapter = object: ColumnAdapter<PGbit, String> {
+    override fun decode(databaseValue: String): PGbit = PGbit(databaseValue)
+    override fun encode(value: PGbit): String = value.toString()
+}
 val vectorAdapter = object: ColumnAdapter<PGvector, String> {
     override fun decode(databaseValue: String): PGvector = PGvector(databaseValue)
     override fun encode(value: PGvector): String = value.toString()
 }
 
-val adapters = Items.Adapter(vectorAdapter)
+val adapters = Items.Adapter(vectorAdapter, bitVectorAdapter)
 
 fun main() {
     val driver = getSqlDriver()
@@ -52,4 +57,8 @@ fun main() {
     sample.vectorQueries.selectMultiply().executeAsList().forEach(::println)
     println("selectNegativeDistanceOperator")
     sample.vectorQueries.selectNegativeDistanceOperator().executeAsList().forEach(::println)
+    println("selectHammingDistanceOperator")
+    sample.vectorQueries.selectHammingDistanceOperator().executeAsList().forEach(::println)
+    println("selectJaccardDistanceOperator")
+    sample.vectorQueries.selectJaccardDistanceOperator().executeAsList().forEach(::println)
 }
