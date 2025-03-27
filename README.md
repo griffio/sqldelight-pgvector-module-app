@@ -31,7 +31,8 @@ sqldelight {
 
 CREATE TABLE items (
     id BIGSERIAL PRIMARY KEY,
-    embedding VECTOR(3)
+    embedding VECTOR(3),
+    bits BIT(3)
 );
 
 CREATE INDEX idx_embedding_hnsw ON items USING hnsw (embedding vector_l2_ops);
@@ -39,7 +40,7 @@ CREATE INDEX idx_embedding_hnsw ON items USING hnsw (embedding vector_l2_ops);
 CREATE INDEX idx_embedding_ivfflat ON items USING ivfflat (embedding vector_l2_ops) WITH (lists = 100);
 
 insert:
-INSERT INTO items (embedding) VALUES ('[1,2,3]'), ('[4,5,6]');
+INSERT INTO items (embedding, bits) VALUES ('[1,2,3]', '000'), ('[4,5,6], '111');
 
 select:
 SELECT *
