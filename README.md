@@ -4,7 +4,7 @@ https://github.com/cashapp/sqldelight
 
 **Experimental**
 
-Use with sqldelight branch https://github.com/griffio/sqldelight/tree/postgresql-modules with minor changes (Pushed to local maven `publishToMavenLocal`)
+Use with SqlDelight `2.1.0-SNAPSHOT`
 
 ---
 
