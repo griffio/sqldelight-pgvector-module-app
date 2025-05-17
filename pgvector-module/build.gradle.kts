@@ -5,7 +5,6 @@ plugins {
 }
 
 repositories {
-    maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
     mavenCentral()
     gradlePluginPortal()
     maven("https://cache-redirector.jetbrains.com/download-pgp-verifier")

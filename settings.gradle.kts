@@ -1,6 +1,5 @@
 pluginManagement {
     repositories {
-        maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
         mavenCentral()
         gradlePluginPortal()
     }
@@ -15,7 +14,7 @@ rootProject.name = "sqldelight-pgvector-module-app"
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            val vSqlDelight = "2.1.0-SNAPSHOT"
+            val vSqlDelight = "2.1.0"
             val vIntellij = "231.9392.1"
             version("intellij", vIntellij)
             plugin("kotlin", "org.jetbrains.kotlin.jvm").version("2.1.0")
