@@ -23,7 +23,8 @@ sqldelight {
             migrationOutputFileFormat = ".sql"
             packageName.set("griffio.queries")
             dialect(libs.sqldelight.postgresql.dialect)
-            module(project(":pgvector-module")) // module can be local project or external dependency
+            module(project(":pgvector-module")) // module can be local project
+            // or external dependency module("")
         }
     }
 }
