@@ -54,7 +54,7 @@ enum class PostGisSqlType(override val javaType: TypeName) : DialectType {
 }
 
 // Change to inheritance so that definitionType can be called by polymorphism - not possible with delegation
-class PostGisTypeResolver(private val parentResolver: TypeResolver) : PgVectorTypeResolver(parentResolver) {
+open class PostGisTypeResolver(private val parentResolver: TypeResolver) : PgVectorTypeResolver(parentResolver) {
     override fun definitionType(typeName: SqlTypeName): IntermediateType {
         return when (typeName) {
             is PostGisTypeName ->

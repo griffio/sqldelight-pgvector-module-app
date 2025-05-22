@@ -1,0 +1,53 @@
+{
+  // Specify the parent parser.
+  overrides="app.cash.sqldelight.dialects.postgresql.grammar.PostgreSqlParser"
+  elementTypeClass = "com.alecstrong.sql.psi.core.SqlElementType"
+
+  implements="com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
+  extends="com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl"
+  psiClassPrefix = "Bm25"
+
+  parserImports=[
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.COMMA"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.LP"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.RP"
+
+    "static com.alecstrong.sql.psi.core.SqlParserUtil.signedNumberExt"
+    "static com.alecstrong.sql.psi.core.SqlParser.signed_number_real"
+
+    "static com.alecstrong.sql.psi.core.SqlParserUtil.columnExprExt"
+    "static com.alecstrong.sql.psi.core.SqlParser.column_expr_real"
+
+    "static com.alecstrong.sql.psi.core.SqlParser.expr"
+  ]
+}
+
+bm25vector_data_type ::= 'BM25VECTOR'
+
+type_name ::= bm25vector_data_type {
+  extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlTypeNameImpl"
+  implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlTypeName"
+}
+
+index_method ::= 'bm25' {
+  extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlIndexMethodImpl"
+  implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlIndexMethod"
+}
+
+storage_parameters ::= 'bm25_ops' {
+  extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlStorageParameterImpl"
+  implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlStorageParameter"
+}
+
+private sql_column_expr ::= <<columnExprExt <<column_expr_real>>>>
+
+score_operator ::= '<&>'
+
+score_operator_expression ::= sql_column_expr score_operator <<expr '-1'>> {
+  pin = 2
+}
+
+extension_expr ::= score_operator_expression  {
+  extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlExtensionExprImpl"
+  implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlExtensionExpr"
+}
