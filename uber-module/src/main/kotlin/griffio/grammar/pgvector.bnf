@@ -1,0 +1,58 @@
+{
+  // Specify the parent parser.
+  overrides="app.cash.sqldelight.dialects.postgresql.grammar.PostgreSqlParser"
+  elementTypeClass = "com.alecstrong.sql.psi.core.SqlElementType"
+
+  implements="com.alecstrong.sql.psi.core.psi.SqlCompositeElement"
+  extends="com.alecstrong.sql.psi.core.psi.SqlCompositeElementImpl"
+  psiClassPrefix = "PgVector"
+
+  parserImports=[
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.COMMA"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.LP"
+    "static com.alecstrong.sql.psi.core.psi.SqlTypes.RP"
+
+    "static com.alecstrong.sql.psi.core.SqlParserUtil.signedNumberExt"
+    "static com.alecstrong.sql.psi.core.SqlParser.signed_number_real"
+
+    "static com.alecstrong.sql.psi.core.SqlParserUtil.columnExprExt"
+    "static com.alecstrong.sql.psi.core.SqlParser.column_expr_real"
+
+    "static com.alecstrong.sql.psi.core.SqlParser.expr"
+  ]
+}
+
+type_name ::= bit_data_type | vector_data_type {
+  extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlTypeNameImpl"
+  implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlTypeName"
+}
+
+bit_data_type ::= 'BIT' [ LP sql_signed_number RP ]
+
+vector_data_type ::= 'VECTOR' [ LP sql_signed_number RP ]
+
+private sql_signed_number ::= <<signedNumberExt <<signed_number_real>>>>
+
+private sql_column_expr ::= <<columnExprExt <<column_expr_real>>>>
+
+distance_operator ::= '<->' | '<#>' | '<=>' | '<+>' | '<~>' | '<%>'
+
+distance_operator_expression ::= sql_column_expr distance_operator <<expr '-1'>> {
+  pin = 2
+}
+
+extension_expr ::= distance_operator_expression  {
+  extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlExtensionExprImpl"
+  implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlExtensionExpr"
+}
+
+index_method ::= 'HNSW' | 'IVFFLAT' {
+  extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlIndexMethodImpl"
+  implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlIndexMethod"
+}
+
+storage_parameters ::= 'lists' {
+  extends = "app.cash.sqldelight.dialects.postgresql.grammar.psi.impl.PostgreSqlStorageParameterImpl"
+  implements = "app.cash.sqldelight.dialects.postgresql.grammar.psi.PostgreSqlStorageParameter"
+}
+

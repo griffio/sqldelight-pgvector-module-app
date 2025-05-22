@@ -35,4 +35,4 @@ dependencyResolutionManagement {
     }
 }
 
-include("pgvector-module")
+include("uber-module")

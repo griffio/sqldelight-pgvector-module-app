@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.pgvector)
     api(libs.sqldelight.postgresql.dialect)
     implementation(libs.postgresql.jdbc.driver)
+    implementation("net.postgis:postgis-jdbc:2024.1.0")
     testImplementation(kotlin("test"))
 }
 
@@ -32,7 +33,7 @@ sqldelight {
             migrationOutputFileFormat = ".sql"
             packageName.set("griffio.queries")
             dialect(libs.sqldelight.postgresql.dialect)
-            module(project(":pgvector-module"))
+            module(project(":uber-module"))
         }
     }
 }
