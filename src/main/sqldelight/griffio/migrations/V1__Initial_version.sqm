@@ -2,7 +2,11 @@ import com.pgvector.PGbit;
 import com.pgvector.PGvector;
 import net.postgis.jdbc.geometry.Point;
 
+SET search_path TO bm25_catalog;
+
 CREATE EXTENSION IF NOT EXISTS vector;
+
+CREATE EXTENSION IF NOT EXISTS vchord_bm25;
 
 CREATE TABLE locations (
   id SERIAL PRIMARY KEY,
@@ -24,3 +28,11 @@ CREATE TABLE items (
 CREATE INDEX idx_embedding_hnsw ON items USING hnsw (embedding vector_l2_ops);
 
 CREATE INDEX idx_embedding_ivfflat ON items USING ivfflat (embedding vector_l2_ops) WITH (lists = 100);
+
+CREATE TABLE Documents (
+    id BIGINT GENERATED ALWAYS AS IDENTITY,
+    passage TEXT,
+    embedding bm25vector
+);
+
+CREATE INDEX documents_embedding_bm25 ON Documents USING bm25 (embedding bm25_ops);
