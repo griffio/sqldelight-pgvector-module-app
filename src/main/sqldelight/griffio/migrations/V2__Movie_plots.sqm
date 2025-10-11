@@ -1,0 +1,79 @@
+-- Create the movie_plots table with an embedding column
+CREATE TABLE movie_plots (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    year INTEGER,
+    genre VARCHAR(100),
+    plot_summary TEXT NOT NULL,
+    embedding VECTOR(1024)  -- Adjust dimension based on your embedding model
+);
+
+-- An HNSW index creates a multilayer graph.
+-- It has better query performance than IVFFlat (in terms of speed-recall tradeoff),
+-- but has slower build times and uses more memory.
+-- Also, an index can be created without any data in the table since there isn’t a training step like IVFFlat.
+-- Add an index for each distance function you want to use.
+CREATE INDEX idx_movie_embedding_hnsw ON movie_plots USING hnsw (embedding vector_cosine_ops);
+
+-- Insert 10 movie plot summaries
+INSERT INTO movie_plots (title, year, genre, plot_summary) VALUES
+(
+    'The Shawshank Redemption',
+    1994,
+    'Drama',
+    'A banker is wrongly convicted of murdering his wife and her lover, and is sentenced to life in Shawshank State Penitentiary. Over two decades, he forms a deep friendship with a fellow inmate who helps him maintain hope. Through patience, intelligence, and determination, he secretly plans his escape while helping the corrupt warden with financial schemes. His eventual escape and the revelation of his meticulous planning inspire his friend to seek redemption and freedom.'
+),
+(
+    'Inception',
+    2010,
+    'Sci-Fi Thriller',
+    'A skilled thief who specializes in stealing secrets from people`s dreams is offered a chance to have his criminal record erased. Instead of stealing an idea, he must plant one deep in a target`s subconscious. He assembles a team to perform this dangerous "inception" by creating dreams within dreams. As they navigate multiple layers of the dream world, reality and illusion blur, and the thief must confront his own guilt about his deceased wife who continues to sabotage his missions.'
+),
+(
+    'Groundhog Day',
+    1993,
+    'Comedy Fantasy',
+    'A cynical TV weatherman finds himself trapped in a time loop, reliving the same day over and over again in a small Pennsylvania town. Initially, he uses the situation for personal gain and reckless behavior. As the loop continues indefinitely, he experiences despair, attempts to escape, and eventually begins to improve himself. Through countless repetitions, he learns piano, ice sculpting, and genuine kindness, ultimately transforming into a better person and breaking free from the cycle.'
+),
+(
+    'The Matrix',
+    1999,
+    'Sci-Fi Action',
+    'A computer hacker discovers that reality as he knows it is actually a simulated world created by machines to keep humans docile while using their bodies as an energy source. He is freed from this simulation and joins a group of rebels fighting against the machines. He learns he may be "The One" prophesied to end the war. As he trains to master the simulated world, he must choose between living in comfortable ignorance or fighting for an uncertain freedom in the harsh real world.'
+),
+(
+    'Up',
+    2009,
+    'Animation Adventure',
+    'An elderly widower fulfills his late wife`s dream of adventure by tying thousands of balloons to his house and flying to South America. An earnest young wilderness explorer accidentally comes along for the journey. Together they encounter exotic birds, talking dogs, and a childhood hero turned villain. Through their adventure, the old man learns to let go of the past, embrace new relationships, and find that the real adventure was the life he already lived with his beloved wife.'
+),
+(
+    'Interstellar',
+    2014,
+    'Sci-Fi Drama',
+    'Earth is dying from blight and dust storms. A former pilot turned farmer is recruited for a desperate mission to find a new habitable planet for humanity by traveling through a wormhole near Saturn. He leaves his family behind, promising to return. The crew faces time dilation effects where hours on distant planets equal years on Earth. As resources dwindle and crew members die, he must make impossible choices between saving humanity and reuniting with his now-elderly daughter who holds the key to survival.'
+),
+(
+    'Parasite',
+    2019,
+    'Dark Comedy Thriller',
+    'A poor family living in a basement apartment schemes to infiltrate the household of a wealthy family by posing as unrelated, highly qualified workers. They successfully get jobs as tutor, art therapist, driver, and housekeeper through deception and manipulation. The precarious situation spirals into chaos when they discover another secret hidden in the mansion`s basement. Class conflict erupts violently during a birthday party, exposing the vast divide between rich and poor.'
+),
+(
+    'Eternal Sunshine of the Spotless Mind',
+    2004,
+    'Romantic Sci-Fi Drama',
+    'After a painful breakup, a man discovers his ex-girlfriend has undergone a procedure to erase all memories of their relationship. Hurt and angry, he decides to do the same. As technicians work through the night to delete his memories, he relives their relationship in reverse. Realizing he wants to keep the memories despite the pain, he tries to hide memories of her in other parts of his mind. The film explores whether love is worth the inevitable suffering that comes with it.'
+),
+(
+    'The Truman Show',
+    1998,
+    'Sci-Fi Drama Comedy',
+    'A cheerful insurance salesman begins noticing strange coincidences and glitches in his perfect suburban life. He slowly discovers that his entire existence is actually a television show, broadcast live to millions, with everyone around him being actors. His hometown is an enormous set, and his life has been controlled by a director since birth. As he becomes aware of the deception, he struggles against the show`s creator to escape his artificial world and experience genuine reality and freedom.'
+),
+(
+    'Arrival',
+    2016,
+    'Sci-Fi Drama',
+    'When twelve alien spacecraft land around Earth, a linguist is recruited to establish communication with the extraterrestrials. As she learns their circular written language, she begins experiencing visions that seem like memories. She discovers their language changes how one perceives time, allowing her to experience past, present, and future simultaneously. She must use this ability to prevent a global war and makes a profound choice about her own future, accepting both joy and heartbreak with full knowledge of what will come.'
+);

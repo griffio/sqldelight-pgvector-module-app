@@ -1,18 +1,7 @@
 import com.pgvector.PGbit;
 import com.pgvector.PGvector;
-import net.postgis.jdbc.geometry.Point;
 
 CREATE EXTENSION IF NOT EXISTS vector;
-
-CREATE TABLE locations (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  point GEOMETRY(Point, 4326) AS Point,
-  pointM GEOMETRY(PointM, 4326) AS Point,
-  pointZ GEOMETRY(PointZ, 4326) AS Point,
-  pointZM GEOMETRY(PointZM, 4326) AS Point
-);
-
 
 CREATE TABLE items (
     id BIGSERIAL PRIMARY KEY,

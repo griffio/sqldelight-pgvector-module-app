@@ -1,0 +1,15 @@
+select:
+SELECT id, title, year, genre, plot_summary FROM movie_plots ORDER BY year;
+
+update:
+UPDATE movie_plots
+SET embedding = jsonb_path_query_first(:embeddingResponse::JSONB, '$.data[*].embedding')::TEXT::VECTOR
+WHERE id = :movieId;
+
+similaritySearch:
+WITH search(vec) AS (
+  SELECT jsonb_path_query_first(:embeddingResponse::JSONB, '$.data[*].embedding')::TEXT::VECTOR
+)
+SELECT id, title, year, genre, 1 - (embedding <=> search.vec) AS similarityScore
+FROM movie_plots, search
+ORDER BY embedding <=> search.vec;
