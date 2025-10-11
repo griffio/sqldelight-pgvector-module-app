@@ -9,6 +9,7 @@ group = "griffio"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    maven(url = "https://central.sonatype.com/repository/maven-snapshots/")
     mavenCentral()
     google()
 }
@@ -19,7 +20,6 @@ dependencies {
     implementation(libs.pgvector)
     api(libs.sqldelight.postgresql.dialect)
     implementation(libs.postgresql.jdbc.driver)
-    implementation("net.postgis:postgis-jdbc:2024.1.0")
     testImplementation(kotlin("test"))
 }
 
@@ -33,7 +33,7 @@ sqldelight {
             migrationOutputFileFormat = ".sql"
             packageName.set("griffio.queries")
             dialect(libs.sqldelight.postgresql.dialect)
-            module(project(":uber-module"))
+            module(project(":pgvector-module"))
         }
     }
 }

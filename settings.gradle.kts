@@ -1,5 +1,6 @@
 pluginManagement {
     repositories {
+        maven(url = "https://central.sonatype.com/repository/maven-snapshots/")
         mavenCentral()
         gradlePluginPortal()
     }
@@ -14,7 +15,7 @@ rootProject.name = "sqldelight-pgvector-module-app"
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            val vSqlDelight = "2.1.0"
+            val vSqlDelight = "2.2.0-SNAPSHOT"
             val vIntellij = "231.9392.1"
             version("intellij", vIntellij)
             plugin("kotlin", "org.jetbrains.kotlin.jvm").version("2.1.0")
@@ -35,4 +36,4 @@ dependencyResolutionManagement {
     }
 }
 
-include("uber-module")
+include("pgvector-module")
