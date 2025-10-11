@@ -69,6 +69,70 @@ selectBinaryQuantize:
 SELECT binary_quantize('[0,0.1,-0.2,-0.3,0.4,0.5,0.6,-0.7,0.8,-0.9,1]'::VECTOR);
 ```
 
+---
+
+Movies Sample
+
+Create LLM embeddings from the movie plot summaries and use prompt.
+
+Uses cosine similarity to find movie plot summaries that are closest to a given prompt
+
+```sql
+-- Create the movie_plots table with an embedding column
+CREATE TABLE movie_plots (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    year INTEGER,
+    genre VARCHAR(100),
+    plot_summary TEXT NOT NULL,
+    embedding VECTOR(1024)  -- Adjust dimension based on your embedding model
+);
+
+-- An HNSW index creates a multilayer graph.
+-- It has better query performance than IVFFlat (in terms of speed-recall tradeoff),
+-- but has slower build times and uses more memory.
+-- Also, an index can be created without any data in the table since there isn’t a training step like IVFFlat.
+-- Add an index for each distance function you want to use.
+CREATE INDEX idx_movie_embedding_hnsw ON movie_plots USING hnsw (embedding vector_cosine_ops);
+```
+
+```sql
+
+select:
+SELECT id, title, year, genre, plot_summary FROM movie_plots ORDER BY year;
+
+update:
+UPDATE movie_plots
+SET embedding = jsonb_path_query_first(:embeddingResponse::JSONB, '$.data[*].embedding')::TEXT::VECTOR
+WHERE id = :movieId;
+
+similaritySearch:
+WITH search(vec) AS (
+  SELECT jsonb_path_query_first(:embeddingResponse::JSONB, '$.data[*].embedding')::TEXT::VECTOR
+)
+SELECT id, title, year, genre, 1 - (embedding <=> search.vec) AS similarityScore
+FROM movie_plots, search
+ORDER BY embedding <=> search.vec;
+
+
+```
+
+```
+-------------------------------------
+Movies about questioning what's real.
+-------------------------------------
+The Truman Show ( 1998 Sci-Fi Drama Comedy ) Score: 0.4663206020784745
+The Matrix ( 1999 Sci-Fi Action ) Score: 0.46191100435653554
+Eternal Sunshine of the Spotless Mind ( 2004 Romantic Sci-Fi Drama ) Score: 0.4469298720359802
+Inception ( 2010 Sci-Fi Thriller ) Score: 0.40091077083881144
+Interstellar ( 2014 Sci-Fi Drama ) Score: 0.35195842385292053
+Up ( 2009 Animation Adventure ) Score: 0.3490072412799696
+Arrival ( 2016 Sci-Fi Drama ) Score: 0.33152367692903795
+Parasite ( 2019 Dark Comedy Thriller ) Score: 0.29843956232070923
+The Shawshank Redemption ( 1994 Drama ) Score: 0.25976793526219977
+Groundhog Day ( 1993 Comedy Fantasy ) Score: 0.25180159498443677
+```
+
 see https://github.com/pgvector/pgvector/blob/master/test/sql/vector_type.sql
 
 **TODO**
