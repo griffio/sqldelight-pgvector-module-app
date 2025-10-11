@@ -12,4 +12,5 @@ WITH search(vec) AS (
 )
 SELECT id, title, year, genre, 1 - (embedding <=> search.vec) AS similarityScore
 FROM movie_plots, search
-ORDER BY embedding <=> search.vec;
+ORDER BY embedding <=> search.vec
+LIMIT 5;
