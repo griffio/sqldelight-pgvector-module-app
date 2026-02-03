@@ -26,31 +26,46 @@ import griffio.grammar.psi.PgVectorTypeName
 import griffio.grammar.psi.impl.PgVectorExtensionExprImpl
 
 class PgVectorModule : SqlDelightModule {
-    override fun typeResolver(parentResolver: TypeResolver): TypeResolver = PgVectorTypeResolver(parentResolver)
+    override fun typeResolver(parentResolver: TypeResolver): TypeResolver {
+        println(parentResolver)
+        return PgVectorTypeResolver(parentResolver)
+    }
+
+    val previousTypeName = PostgreSqlParserUtil.type_name
+    val previousExtensionExpr = PostgreSqlParserUtil.extension_expr
+    val previousIndexMethod = PostgreSqlParserUtil.index_method
+    val previousStorageParameters = PostgreSqlParserUtil.storage_parameters
 
     override fun setup() {
         PgvectorParserUtil.reset()
         PgvectorParserUtil.overridePostgreSqlParser()
         // As the grammar doesn't support inheritance - override type_name manually to try inherited type_name
         PostgreSqlParserUtil.type_name = Parser { psiBuilder, i ->
-            type_name?.parse(psiBuilder, i) ?: PgvectorParser.type_name_real(psiBuilder, i)
-                    || PostgreSqlParser.type_name_real(psiBuilder, i)
+            type_name?.parse(psiBuilder, i)
+                    ?: PgvectorParser.type_name_real(psiBuilder, i)
+                    || previousTypeName?.parse(psiBuilder, i)
+                    ?: PostgreSqlParser.type_name_real(psiBuilder, i)
         }
         // doesn't support inheritance - override extension_expr manually to try inherited extension_expr
         PostgreSqlParserUtil.extension_expr = Parser { psiBuilder, i ->
-            extension_expr?.parse(psiBuilder, i) ?: PgvectorParser.extension_expr_real(psiBuilder, i)
-                    || PostgreSqlParser.extension_expr_real(psiBuilder, i)
+            extension_expr?.parse(psiBuilder, i)
+                    ?: PgvectorParser.extension_expr_real(psiBuilder, i)
+                    || previousExtensionExpr?.parse(psiBuilder, i)
+                    ?: PostgreSqlParser.extension_expr_real(psiBuilder, i)
         }
         // etc
         PostgreSqlParserUtil.index_method = Parser { psiBuilder, i ->
-            index_method?.parse(psiBuilder, i) ?: PgvectorParser.index_method_real(psiBuilder, i)
-                    || PostgreSqlParser.index_method_real(psiBuilder, i)
+            index_method?.parse(psiBuilder, i)
+                    ?: PgvectorParser.index_method_real(psiBuilder, i)
+                    || previousIndexMethod?.parse(psiBuilder, i)
+                    ?: PostgreSqlParser.index_method_real(psiBuilder, i)
         }
         // etc
         PostgreSqlParserUtil.storage_parameters = Parser { psiBuilder, i ->
-            storage_parameters?.parse(psiBuilder, i) ?: PgvectorParser.storage_parameters_real(psiBuilder, i)
-                    || PostgreSqlParser.storage_parameters_real(psiBuilder, i)
-        }
+            storage_parameters?.parse(psiBuilder, i)
+                    ?: PgvectorParser.storage_parameters_real(psiBuilder, i)
+                    || previousStorageParameters?.parse(psiBuilder, i)
+                    ?: PostgreSqlParser.storage_parameters_real(psiBuilder, i)        }
 
     }
 }
@@ -79,21 +94,21 @@ enum class PgVectorSqlType(override val javaType: TypeName) : DialectType {
 // Change to inheritance so that definitionType can be called by polymorphism - not possible with delegation
 private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : PostgreSqlTypeResolver(parentResolver) {
 
-    override fun booleanBinaryExprTypes(): Array<DialectType> {
+    override fun booleanBinaryExprTypes(): Array<DialectType> { // called by super.resolvedType()
         return arrayOf(PgVectorSqlType.VECTOR, PgVectorSqlType.BIT, *super.booleanBinaryExprTypes())
     }
 
     override fun definitionType(typeName: SqlTypeName): IntermediateType {
         return when (typeName) {
             is PgVectorTypeName -> if (typeName.bitDataType != null) IntermediateType(PgVectorSqlType.BIT) else IntermediateType(PgVectorSqlType.VECTOR)
-            else -> super.definitionType(typeName)
+            else -> parentResolver.definitionType(typeName)
         }
     }
 
     override fun resolvedType(expr: SqlExpr): IntermediateType {
         return when (expr) {
             is PgVectorExtensionExprImpl -> expr.vectorExtension()
-            else -> super.resolvedType(expr)
+            else -> super.resolvedType(expr) // `super` is needed as SqlBinaryExpr calls into PgVectorTypeResolver.definitionType
         }
     }
 
@@ -107,7 +122,7 @@ private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : P
      * <%> - Jaccard distance (binary vectors) // BIT type
      */
     fun PgVectorExtensionExprImpl.vectorExtension(): IntermediateType {
-        if (distanceOperatorExpression != null) return IntermediateType(PrimitiveType.REAL) else error("must be distanceOperatorExpression")
+        if (distanceOperatorExpression != null) return IntermediateType(PrimitiveType.REAL) else error("mu`st be distanceOperatorExpression")
     }
 
     override fun functionType(functionExpr: SqlFunctionExpr): IntermediateType? =
