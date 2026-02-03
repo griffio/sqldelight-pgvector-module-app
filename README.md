@@ -140,13 +140,50 @@ see https://github.com/pgvector/pgvector/blob/master/test/sql/vector_type.sql
 Add more types - halfvec, sparse vectors 
 
 Extending an existing grammar through more than one level of inheritance isn't supported by grammar generator -  
-This would require fixes to https://github.com/sqldelight/Grammar-Kit-Composer - work around is to override manually e.g.
+This would require fixes to https://github.com/sqldelight/Grammar-Kit-Composer - work around is to override manually and
+chain the previous rule that another SqlDelight module maybe overriding (e.g. PgVector)
+
+e.g.
 
 ```kotlin
- PostgreSqlParserUtil.type_name = Parser { psiBuilder, i ->
-            type_name?.parse(psiBuilder, i) ?: PgvectorParser.type_name_real(psiBuilder, i)
-                    || PostgreSqlParser.type_name_real(psiBuilder, i)
-        }
+
+val previousTypeName = PostgreSqlParserUtil.type_name
+val previousExtensionExpr = PostgreSqlParserUtil.extension_expr
+val previousIndexMethod = PostgreSqlParserUtil.index_method
+val previousStorageParameters = PostgreSqlParserUtil.storage_parameters
+
+override fun setup() {
+    PgvectorParserUtil.reset()
+    PgvectorParserUtil.overridePostgreSqlParser()
+    // As the grammar doesn't support inheritance - override type_name manually to try inherited type_name
+    PostgreSqlParserUtil.type_name = Parser { psiBuilder, i ->
+        type_name?.parse(psiBuilder, i)
+                ?: PgvectorParser.type_name_real(psiBuilder, i)
+                || previousTypeName?.parse(psiBuilder, i)
+                ?: PostgreSqlParser.type_name_real(psiBuilder, i)
+    }
+    // doesn't support inheritance - override extension_expr manually to try inherited extension_expr
+    PostgreSqlParserUtil.extension_expr = Parser { psiBuilder, i ->
+        extension_expr?.parse(psiBuilder, i)
+                ?: PgvectorParser.extension_expr_real(psiBuilder, i)
+                || previousExtensionExpr?.parse(psiBuilder, i)
+                ?: PostgreSqlParser.extension_expr_real(psiBuilder, i)
+    }
+    // etc
+    PostgreSqlParserUtil.index_method = Parser { psiBuilder, i ->
+        index_method?.parse(psiBuilder, i)
+                ?: PgvectorParser.index_method_real(psiBuilder, i)
+                || previousIndexMethod?.parse(psiBuilder, i)
+                ?: PostgreSqlParser.index_method_real(psiBuilder, i)
+    }
+    // etc
+    PostgreSqlParserUtil.storage_parameters = Parser { psiBuilder, i ->
+        storage_parameters?.parse(psiBuilder, i)
+                ?: PgvectorParser.storage_parameters_real(psiBuilder, i)
+                || previousStorageParameters?.parse(psiBuilder, i)
+                ?: PostgreSqlParser.storage_parameters_real(psiBuilder, i)      
+    }
+}
 ```
 
 SqlDelight needs this fix https://github.com/sqldelight/sqldelight/pull/5677 for the modules to work as the
