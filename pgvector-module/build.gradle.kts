@@ -7,7 +7,7 @@ plugins {
     id("org.jreleaser") version "1.18.0"
 }
 
-version = "0.0.1"
+version = "0.0.2"
 group = "io.github.griffio"
 
 repositories {
@@ -81,7 +81,7 @@ jreleaser {
     gitRootSearch = true
     project {
         description = "SQLDelight module for PgVector support"
-        copyright = "2025 griffio"
+        copyright = "2026 griffio"
     }
     deploy {
         signing {
