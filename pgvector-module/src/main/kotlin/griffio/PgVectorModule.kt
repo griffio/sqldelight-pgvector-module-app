@@ -27,7 +27,6 @@ import griffio.grammar.psi.impl.PgVectorExtensionExprImpl
 
 class PgVectorModule : SqlDelightModule {
     override fun typeResolver(parentResolver: TypeResolver): TypeResolver {
-        println(parentResolver)
         return PgVectorTypeResolver(parentResolver)
     }
 
@@ -122,7 +121,7 @@ private class PgVectorTypeResolver(private val parentResolver: TypeResolver) : P
      * <%> - Jaccard distance (binary vectors) // BIT type
      */
     fun PgVectorExtensionExprImpl.vectorExtension(): IntermediateType {
-        if (distanceOperatorExpression != null) return IntermediateType(PrimitiveType.REAL) else error("mu`st be distanceOperatorExpression")
+        if (distanceOperatorExpression != null) return IntermediateType(PrimitiveType.REAL) else error("must be distanceOperatorExpression")
     }
 
     override fun functionType(functionExpr: SqlFunctionExpr): IntermediateType? =
