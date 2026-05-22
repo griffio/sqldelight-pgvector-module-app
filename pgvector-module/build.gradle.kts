@@ -7,10 +7,11 @@ plugins {
     id("org.jreleaser") version "1.18.0"
 }
 
-version = "0.0.2"
+version = "0.0.3"
 group = "io.github.griffio"
 
 repositories {
+    mavenLocal()
     maven(url = "https://central.sonatype.com/repository/maven-snapshots/")
     mavenCentral()
     gradlePluginPortal()

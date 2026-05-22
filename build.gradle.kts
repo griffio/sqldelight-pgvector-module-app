@@ -9,7 +9,6 @@ group = "griffio"
 version = "1.0-SNAPSHOT"
 
 repositories {
-    maven(url = "https://central.sonatype.com/repository/maven-snapshots/")
     mavenCentral()
     google()
 }
@@ -20,6 +19,7 @@ dependencies {
     implementation(libs.pgvector)
     api(libs.sqldelight.postgresql.dialect)
     implementation(libs.postgresql.jdbc.driver)
+    implementation(libs.pgvector)
     testImplementation(kotlin("test"))
 }
 
@@ -61,7 +61,7 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 application {
