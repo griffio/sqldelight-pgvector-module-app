@@ -1,10 +1,10 @@
-# SqlDelight 2.2.x Postgresql PgVector module support prototype 
+# SqlDelight 2.3.x Postgresql PgVector module support prototype 
 
 https://github.com/cashapp/sqldelight
 
 **Experimental**
 
-Use with SqlDelight `2.2.1`
+Use with SqlDelight `2.3.x` or higher
 
 ---
 
@@ -32,7 +32,7 @@ sqldelight {
 
 `pgvector-module` published in Maven Central https://central.sonatype.com/artifact/io.github.griffio/sqldelight-pgvector/versions
 
-`io.github.griffio:sqldelight-pgvector:0.0.2`
+`io.github.griffio:sqldelight-pgvector:0.0.3`
 
 ```sql
 
