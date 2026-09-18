@@ -7,7 +7,7 @@ plugins {
     id("org.jreleaser") version "1.18.0"
 }
 
-version = "0.0.3"
+version = "0.0.4"
 group = "io.github.griffio"
 
 repositories {
